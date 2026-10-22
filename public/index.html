@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Car Research</title>
+  <meta name="description" content="Enter a VIN. Get a report from public vehicle and safety records.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='10' fill='%2318181b'/%3E%3Cpath d='M12 26V14h16M13 25l14-10' fill='none' stroke='white' stroke-width='2.5'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/styles.css">
+  <script type="module" src="/app.js"></script>
+</head>
+<body>
+  <main id="main">
+    <section id="search-view" class="search-view" aria-labelledby="search-title">
+      <div class="search-content">
+        <div class="wordmark">car research</div>
+        <h1 id="search-title">Get to know the car.</h1>
+        <p class="intro">One VIN. A report from public records.</p>
+        <form id="lookup-form" novalidate>
+          <label for="vin" class="sr-only">Vehicle identification number</label>
+          <div class="search-field">
+            <input id="vin" name="vin" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="17" placeholder="Enter a VIN" aria-describedby="vin-help lookup-message" required>
+            <button id="research-button" type="submit" aria-label="Generate report" title="Generate report"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+          </div>
+          <div class="field-caption" id="vin-help"><span>17 characters · U.S. vehicles</span><span id="vin-count" aria-hidden="true">0 / 17</span></div>
+        </form>
+        <div id="loading" class="loading" role="status" hidden><span class="spinner" aria-hidden="true"></span><span>Looking up vehicle, safety, and fuel records…</span><button type="button" id="cancel-button" class="text-button">Cancel</button></div>
+        <p id="lookup-message" role="status" aria-live="polite"></p>
+        <p class="source-hint">Specs <span>·</span> Safety <span>·</span> Fuel economy</p>
+      </div>
+      <p class="search-footer">Public data from NHTSA & EPA / DOE</p>
+    </section>
+    <article id="report" class="report" aria-labelledby="vehicle-title" hidden>
+      <div class="report-toolbar"><button id="new-search" class="text-button"><span aria-hidden="true">←</span> New lookup</button><div class="report-actions"><button id="export-button" class="action-button">Save HTML</button><button id="print-button" class="action-button primary">Print / Save PDF</button></div></div>
+      <p id="export-message" class="small export-message" role="status"></p>
+      <div class="report-document">
+      <header class="report-heading"><div class="document-masthead"><span class="wordmark">car research</span><p class="eyebrow">Pre-purchase research</p></div><h1 id="vehicle-title" tabindex="-1"></h1><div id="report-meta" class="report-meta"></div><p id="report-summary" class="report-summary"></p><p class="print-note small">This report includes all retrieved records, including sections collapsed on screen. Coverage limits are noted below.</p></header>
+      <div id="warnings"></div>
+      <section id="overview" class="report-section" aria-labelledby="identity-title"><h2 id="identity-title">Vehicle details</h2><dl id="specs" class="specs"></dl><div id="decode-source" class="source-line"></div><p class="small">Specifications describe the original vehicle. Missing values were not supplied by the source.</p></section>
+      <section id="fuel" class="report-section" aria-labelledby="fuel-heading"><div class="section-heading"><h2 id="fuel-heading">Fuel economy</h2><span id="fuel-status" class="small"></span></div><p class="muted">EPA estimates for matching model configurations. Confirm the engine, transmission, and drivetrain; these are not measured MPG for this car. MPGe is an energy-equivalent measure; separate fuels are listed separately.</p><div id="fuel-source" class="source-line"></div><div id="fuel-records"></div></section>
+      <section id="safety" class="report-section" aria-label="Safety research"><div class="section-heading"><h2>Safety records</h2><span class="small">Year / make / model matches</span></div><p class="muted">These records apply to the model, not necessarily this car. Confirm open recalls using the VIN.</p><details id="ratings-section" class="report-disclosure" open><summary><span>Crash & rollover ratings</span><span id="ratings-count" class="count"></span></summary><div class="disclosure-body"><p class="small">NHTSA test results for the variants below; no variant is automatically assigned to this VIN. Ratings do not establish the condition or repair quality of a used car.</p><div id="ratings-source" class="source-line"></div><div id="ratings-records"></div></div></details><details class="report-disclosure"><summary><span>Recall campaigns</span><span id="recall-title" class="count"></span></summary><div class="disclosure-body"><div id="recall-source" class="source-line"></div><div id="recalls"></div><a class="external-link" href="https://www.nhtsa.gov/recalls" target="_blank" rel="noopener noreferrer">Check this VIN for unrepaired recalls ↗</a></div></details><details class="report-disclosure"><summary><span>Owner complaints</span><span id="complaint-title" class="count"></span></summary><div class="disclosure-body"><p class="small">Owner allegations, not verified defects. Counts are not failure rates or a reliability rating.</p><div id="complaint-source" class="source-line"></div><div id="complaints"></div></div></details></section>
+      <section id="next-steps" class="report-section"><h2>History checks for this VIN</h2><p class="muted">Open these providers to investigate the car’s individual history. Their results are not retrieved or verified by this app.</p><div class="vin-copy"><code id="history-vin"></code><button id="copy-vin" class="text-button">Copy VIN</button></div><p id="copy-message" class="small" role="status"></p><div class="history-links"><a id="carfax-link" target="_blank" rel="noopener noreferrer"><div><strong>CARFAX</strong><span class="small">Accidents, service records, mileage, ownership & usage history</span></div><span class="small">VIN prefilled · paid report ↗</span></a><a href="https://www.nicb.org/vincheck" target="_blank" rel="noopener noreferrer"><div><strong>NICB VINCheck</strong><span class="small">Participating-insurer theft & salvage indicators</span></div><span class="small">Paste VIN · free check ↗</span></a><a href="https://vehiclehistory.bja.ojp.gov/nmvtis_vehiclehistory" target="_blank" rel="noopener noreferrer"><div><strong>NMVTIS providers</strong><span class="small">Title brands, reported odometer readings, salvage & junk history</span></div><span class="small">Choose provider & paste VIN · fees vary ↗</span></a><a href="https://www.nhtsa.gov/recalls" target="_blank" rel="noopener noreferrer"><div><strong>NHTSA VIN recall lookup</strong><span class="small">Unrepaired recall status for this individual vehicle</span></div><span class="small">Paste VIN · free check ↗</span></a></div><details class="coverage-details"><summary>Sources & coverage</summary><ul id="coverage" class="coverage-list"></ul><p class="small">External history is incomplete even when no record is found. CARFAX contains only reported information. NICB covers participating insurers and limits checks to five per IP per day. NMVTIS is accessed through approved providers and does not contain service history. NHTSA’s VIN tool can omit older recalls, completed repairs, and some manufacturers.</p></details></section>
+      <footer class="report-footer">Public records are a starting point. Have the car independently inspected before buying.</footer>
+      </div>
+    </article>
+  </main>
+</body>
+</html>
